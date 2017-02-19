@@ -30,15 +30,15 @@
 
             function setMyPos() {
                 var pos;
-                if (navigator.geolocation) {
+                if (false) { // hard coded location for the speed of demonstration
                     navigator.geolocation.getCurrentPosition(function(position) {
                         pos = {lat: position.coords.latitude, lng: position.coords.longitude};
                         myPos = pos;
                         map.setCenter(pos);
                     });
                 } else {
-                    myPos = {lat: 39.3299, lng: -76.6205};
-                    map.setCenter({lat: 39.3299, lng: -76.6205});
+                    myPos = {lat: 39.327536, lng: -76.622386};
+                    map.setCenter(myPos);
                 }
             }
 
