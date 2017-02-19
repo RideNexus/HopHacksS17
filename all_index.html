@@ -9,19 +9,24 @@
             }
 
             #leftcol {
-                left: 0%;
-                height: 100%;
-                width: 10%;
                 position: absolute;
+                top: 0px;
+                left: 0px;
+                height: 175px;
+                width: 140px;
                 border: 2px solid black;
                 background: #F0F0F0;
+                z-index: 1;
+                padding: 2px;
             }
 
             #map {
-                left: 10.3%;
-                height: 100%;
-                width: 89.7%;
                 position: absolute;
+                top: 0px;
+                left: 0px;
+                height: 100%;
+                width: 100%;
+                z-index: 0;
             }
 
             .info {
@@ -34,7 +39,10 @@
     <body>
         <div id="leftcol">
             <form>
-                <div id="result">Code:</div><input id="code" type="text" name="Code"/>
+                <div id="result">Code:</div><input id="code" type="text" name="Code"/><br/>
+                Name:<input id="name" type="text" name="Name"/><br/>
+                Username:<input id="user" type="text" name="User"/><br/>
+                Date (mm/dd/yyyy):<input id="date" type="text" name="Date"/>
             </form>
             <button onclick="checkCode(myPos)">Submit</button>
         </div>
@@ -125,17 +133,12 @@
             people["HOS_JHU"] = hos_jhu;
             people["AIR_BWI"] = air_bwi;
 
-            //TODO:
-                // function that takes the location of input in CODES
-                // Creates markers for all the fake people related to each code
-                // Array of array of locations
-                // locations[] = that spot in the array
-                // make a marker for each
-                // At the beginning of each checkCode, hide all markers
-
-
             function checkCode(pos) {
                 var input = document.getElementById("code").value;
+                var d = document.getElementById("date").value;
+                var name = document.getElementById("name").value;
+                var usr = document.getElementById("user").value;
+
                 document.getElementById("result").innerHTML = "Code: " + input;
 
                 for (var i = 0; i < markers.length; i++) {
@@ -151,8 +154,7 @@
                     return;
                 }
                 
-                var d = window.prompt("Appointment Date (mm/dd/yyyy):")
-                var obj = {title: "YOU", location: pos, user: "me", date: d};
+                var obj = {title: name, location: pos, user: usr, date: d};
 
                 if (!people[input].includes(obj)) {
                     people[input].push(obj);
