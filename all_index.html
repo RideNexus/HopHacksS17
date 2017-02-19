@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <style>
+            html, body {
+                height: 100%;
+                margin: 0;
+                padding: 0;
+            }
+
+            #leftcol {
+                left: 0%;
+                height: 100%;
+                width: 10%;
+                position: absolute;
+                border: 2px solid black;
+                background: #F0F0F0;
+            }
+
+            #map {
+                left: 10.3%;
+                height: 100%;
+                width: 89.7%;
+                position: absolute;
+            }
+
+            .info {
+                color: red;
+                text-align: center;
+            }
+
+        </style>
+    </head>
+    <body>
+        <div id="leftcol">
+            <form>
+                <div id="result">Code:</div><input id="code" type="text" name="Code"/>
+            </form>
+            <button onclick="checkCode(myPos)">Submit</button>
+        </div>
+        <div id="map"></div>
+        <script>
+            var map;
+            function initMap() {
+                var markers = [];
+                var largeInfoWindow = new google.maps.InfoWindow();
+                var bounds = new google.maps.LatLngBounds();
+                var myPos;
+
+                map = new google.maps.Map(document.getElementById('map'), {
+                    styles: [{"featureType":"landscape","stylers":[{"hue":"#FFBB00"},{"saturation":43.400000000000006},{"lightness":37.599999999999994},{"gamma":1}]},{"featureType":"road.highway","stylers":[{"hue":"#FFC200"},{"saturation":-61.8},{"lightness":45.599999999999994},{"gamma":1}]},{"featureType":"road.arterial","stylers":[{"hue":"#FF0300"},{"saturation":-100},{"lightness":51.19999999999999},{"gamma":1}]},{"featureType":"road.local","stylers":[{"hue":"#FF0300"},{"saturation":-100},{"lightness":52},{"gamma":1}]},{"featureType":"water","stylers":[{"hue":"#0078FF"},{"saturation":-13.200000000000003},{"lightness":2.4000000000000057},{"gamma":1}]},{"featureType":"poi","stylers":[{"hue":"#00FF6A"},{"saturation":-1.0989010989011234},{"lightness":11.200000000000017},{"gamma":1}]},{"featureType":"poi.medical","stylers":[{"hue":"#0000FF"},{"saturation":-1.0989010989011234},{"lightness":11.200000000000017},{"gamma":1}]}],
+                            mapTypeControl: false,
+                            zoom: 16
+                });
+                setMyPos();
+                
+            }
+
+            function setMyPos() {
+                var pos;
+                if (false) { // hard coded location for the speed of demonstration
+                    navigator.geolocation.getCurrentPosition(function(position) {
+                        pos = {lat: position.coords.latitude, lng: position.coords.longitude};
+                        myPos = pos;
+                        map.setCenter(pos);
+                    });
+                } else {
+                    myPos = {lat: 39.327536, lng: -76.622386};
+                    map.setCenter(myPos);
+                }
+            }
+
+            // Haversine Formula
+            function straightLineDist(p1, p2) {
+                var R = 6371; // Radius of the earth in km
+                var dLat = rad(p2.lat-p1.lat);
+                var dLon = rad(p2.lng-p1.lng); 
+                var a = Math.sin(dLat/2) * Math.sin(dLat/2) + Math.cos(rad(p1.lat)) * Math.cos(rad(p2.lat)) * Math.sin(dLon/2) * Math.sin(dLon/2);
+                var c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a)); 
+                var d = R * c; // Distance in km
+                return d;
+            }
+
+            function rad(deg) {
+                return deg * (Math.PI/180)
+            }
+
+        </script>
+        <script async defer
+            src="https://maps.googleapis.com/maps/api/js?key=AIzaSyD8uL8FECJQ8sJ00kPuGpJOvPfxhqj_tbQ&v=3&libraries=geometry&callback=initMap">
+        </script>
+        <script type="text/javascript"">
+            // Bulk of the JS Code
+
+            var locations = [];
+            var markers = [];
+
+            var people = {};
+
+            // Add any additional people here. Will be ported in via MySQL database
+
+            var hos_um = [
+                {title: 'John', location: {lat: 39.325840, lng: -76.614019}, user: "j_cena", date: "03/01/2017"},
+                {title: 'Will', location: {lat: 39.324587, lng: -76.615733}, user: "web_dubois", date: "03/01/2017"},
+                {title: 'Ron', location: {lat: 39.324762, lng: -76.611908}, user: "ronnie_d", date: "03/01/2017"}
+            ];
+
+            var hos_jhu = [
+                {title: 'George', location: {lat: 39.331325, lng: -76.608177}, user: "prez1", date: "03/01/2017"},
+                {title: 'Kim', location: {lat: 39.329117, lng: -76.607984}, user: "kim_k", date: "03/01/2017"},
+                {title: 'Lebron', location: {lat: 39.326901, lng: -76.613413}, user: "lebron", date: "03/01/2017"},
+                {title: 'Stephen', location: {lat: 39.323374, lng: -76.615634}, user: "chef_curry", date: "03/01/2017"}
+            ];
+
+            var air_bwi = [
+                {title: "Ariana", location: {lat: 39.331848, lng:-76.619518}, user: "a_grande", date: "03/01/2017"},
+                {title: "Tom", location: {lat: 39.336421, lng: -76.618571}, user: "pats12", date: "03/01/2017"},
+                {title: "Marilyn", location: {lat: 39.328711, lng: -76.616555}, user: "m_monroe", date: "03/01/2017"}
+            ];
+
+            // Add these to "people"
+            // Add codes here
+
+            people["HOS_UM"] = hos_um;
+            people["HOS_JHU"] = hos_jhu;
+            people["AIR_BWI"] = air_bwi;
+
+            //TODO:
+                // function that takes the location of input in CODES
+                // Creates markers for all the fake people related to each code
+                // Array of array of locations
+                // locations[] = that spot in the array
+                // make a marker for each
+                // At the beginning of each checkCode, hide all markers
+
+
+            function checkCode(pos) {
+                var input = document.getElementById("code").value;
+                document.getElementById("result").innerHTML = "Code: " + input;
+
+                for (var i = 0; i < markers.length; i++) {
+                    markers[i].setMap(null);
+                }
+                markers = [];
+                locations = [];
+
+
+                locations = people[input];
+                if (locations == undefined) {
+                    window.alert("Invalid code!");
+                    return;
+                }
+                
+                var d = window.prompt("Appointment Date (mm/dd/yyyy):")
+                var obj = {title: "YOU", location: pos, user: "me", date: d};
+
+                if (!people[input].includes(obj)) {
+                    people[input].push(obj);
+                }
+
+                makeMarkers(pos, d);
+            }
+
+            function makeMarkers(pos, d) {
+                var bounds = new google.maps.LatLngBounds();
+                var info = new google.maps.InfoWindow();
+
+                for (var i = 0; i < locations.length; i++) {
+                    if (d != locations[i].date) {
+                        continue;
+                    }
+                    if (straightLineDist(pos, locations[i].location) > 16.1) {
+                        continue;
+                    }
+                    var marker = new google.maps.Marker({
+                        map: map,
+                        position: locations[i].location,
+                        title: locations[i].title,
+                        animation: google.maps.Animation.DROP,
+                        id: locations[i].user
+                    });
+                    markers.push(marker);
+
+                    marker.addListener('click', function() {
+                        infoWindow(this, info);
+                    });
+
+                    bounds.extend(marker.position);
+                }
+                map.fitBounds(bounds);
+            }
+
+            function infoWindow(marker, infoWin) {
+                if (infoWin.marker != marker) {
+                    infoWin.marker = marker;
+                    infoWin.setContent("<div class='info'>" + marker.title + "<br/><i>@" + marker.id + "</i></div>");
+                    infoWin.open(map, marker);
+                    infoWin.addListener("closeclick", function() {
+                        infoWin.marker = null;
+                    });
+                }
+            }
+
+        </script>
+    </body>
+</html>
