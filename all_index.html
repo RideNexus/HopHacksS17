@@ -14,10 +14,21 @@
                 left: 0px;
                 height: 175px;
                 width: 140px;
-                border: 2px solid black;
-                background: #F0F0F0;
+                border: 1px solid lightgrey;
+                background: #AEE9C6;
                 z-index: 1;
                 padding: 2px;
+            }
+
+            #rightcol {
+                position: absolute;
+                top: 0px;
+                right: 0px;
+                font-size: 24px;
+                padding: 2px;
+                z-index: 1;
+                background: #AEE9C6;
+                border-radius: 10px;
             }
 
             #map {
@@ -46,6 +57,7 @@
             </form>
             <button onclick="checkCode(myPos)">Submit</button>
         </div>
+        <div id="rightcol"></div>
         <div id="map"></div>
         <script>
             var map;
@@ -139,6 +151,21 @@
                 var name = document.getElementById("name").value;
                 var usr = document.getElementById("user").value;
 
+                if (name.length < 1) {
+                    document.getElementById("rightcol").innerHTML = "Please Enter Name";
+                    return;
+                }
+
+                if (!usr.includes('@') || !usr.includes(".com")) {
+                    document.getElementById("rightcol").innerHTML = "Invalid Email";
+                    return;
+                }
+
+                if (d.length != 10) {
+                    document.getElementById("rightcol").innerHTML = "Invalid Date Entry";
+                    return;
+                }
+
                 document.getElementById("result").innerHTML = "Code: " + input;
 
                 for (var i = 0; i < markers.length; i++) {
@@ -150,7 +177,7 @@
 
                 locations = people[input];
                 if (locations == undefined) {
-                    window.alert("Invalid code!");
+                    document.getElementById("rightcol").innerHTML = "Invalid Code";
                     return;
                 }
                 
